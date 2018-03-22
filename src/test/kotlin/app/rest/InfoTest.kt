@@ -1,5 +1,6 @@
 package app.rest
 
+import app.HTTP_TIMEOUT
 import app.Server
 import app.extension.ServerExtension
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,7 +23,7 @@ class InfoTest {
                     assertEquals(200, r.status().code())
                     r.receive().aggregate().asString()
                 }
-                .timeout(Duration.ofMillis(1000)))
+                .timeout(Duration.ofMillis(HTTP_TIMEOUT)))
             .assertNext { data -> data.isNotBlank() }
             .verifyComplete()
     }
