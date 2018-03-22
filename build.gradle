@@ -1,0 +1,127 @@
+buildscript {
+    ext {
+        kotlinVer = '1.2.30'
+
+        slf4jVer = '1.7.25'
+        kotlinLoggingVer = '1.5.4'
+        log4jVer = '2.11.0'
+
+        nettyVer = '4.1.22.Final'
+        reactorNettyVer = '0.7.5.RELEASE'
+        reactorVer = '3.1.5.RELEASE'
+        jacksonVer = '2.9.4'
+
+        junitJupiterVer = '5.1.0'
+        junitPlatformVer = '1.1.0'
+
+        versionPluginVer = '0.17.0'
+        shadowPluginVer = '2.0.2'
+        dockerPluginVer = '0.19.2'
+    }
+
+    repositories {
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVer"
+        classpath "com.github.jengelman.gradle.plugins:shadow:$shadowPluginVer"
+        // gradle dependencyUpdates -Drevision=release
+        classpath "com.github.ben-manes:gradle-versions-plugin:$versionPluginVer"
+        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:$dockerPluginVer"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$junitPlatformVer"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'kotlin'
+apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.palantir.docker'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVer"
+    //compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVer"
+
+    compile "io.github.microutils:kotlin-logging:$kotlinLoggingVer"
+    runtime "org.slf4j:slf4j-api:$slf4jVer"
+    runtime "org.apache.logging.log4j:log4j-core:$log4jVer"
+    runtime "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVer"
+
+    compile "io.projectreactor.ipc:reactor-netty:$reactorNettyVer"
+    compile "io.netty:netty-transport-native-epoll:$nettyVer:linux-x86_64"
+
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVer"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVer"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVer"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVer.1"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVer"
+    //compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVer"
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVer"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVer"
+    testRuntime "org.junit.platform:junit-platform-launcher:$junitPlatformVer"
+
+    testCompile "io.projectreactor:reactor-test:$reactorVer"
+}
+
+group = 'app'
+version = '0.1-SNAPSHOT'
+
+mainClassName = 'app.AppKt'
+
+sourceCompatibility = JavaVersion.VERSION_1_10
+targetCompatibility = JavaVersion.VERSION_1_10
+
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.incremental = true
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        apiVersion = "1.2"
+        languageVersion = "1.2"
+        jvmTarget = "1.8"
+    }
+}
+
+junitPlatform {
+    enableStandardTestTask true
+}
+
+shadowJar {
+    baseName = 'app'
+    classifier = null
+    version = null
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.6'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+// https://github.com/palantir/gradle-docker
+// gradle docker
+docker {
+    dependsOn shadowJar
+    name 'app'
+    tags 'latest'
+    files shadowJar.outputs
+    dockerfile file('src/main/docker/Dockerfile')
+    buildArgs([
+        JAVA_OPTS: '-XX:-TieredCompilation -XX:MaxRAMFraction=1',
+        PORT     : '8080'
+    ])
+    pull true
+}
+
+task stage(dependsOn: ['shadowJar', 'clean'])
