@@ -7,6 +7,8 @@ Telegram bot example with [Kotlin](https://kotlinlang.org) and [Reactor](https:/
 
 Undone
 
+[Bot URL](https://telegram.me/foo_bar_example_bot)
+
 ### Run
 ```
 gradle run
