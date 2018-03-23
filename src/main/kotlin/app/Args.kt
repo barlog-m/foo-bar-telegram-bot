@@ -1,6 +1,10 @@
 package app
 
-fun parse(vararg args: String): Map<String, String> =
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
+fun parse(args: List<String>): Map<String, String> =
     args
         .filter {
             it.isNotBlank() && it[0] == "-".single() && it[1] == "-".single()
@@ -18,7 +22,7 @@ fun parse(vararg args: String): Map<String, String> =
 fun port(args: Map<String, String>): Int {
     val port = try {
         args
-            .filter { (k, _) -> k == "port"}
+            .filter { (k, _) -> k == "port" }
             .map { (_, v) ->
                 try {
                     v.toInt()
@@ -41,7 +45,7 @@ fun port(args: Map<String, String>): Int {
 fun webHookToken(args: Map<String, String>): String {
     val token = try {
         args
-            .filter { (k, _) -> k == "wh_token"}
+            .filter { (k, _) -> k == "wh_token" }
             .map { (_, v) -> v }
             .first()
     } catch (e: NoSuchElementException) {
@@ -51,6 +55,7 @@ fun webHookToken(args: Map<String, String>): String {
     return if (token.isNotBlank()) {
         token
     } else {
+        logger.warn { "web hook token does not set" }
         "none"
     }
 }
@@ -58,7 +63,7 @@ fun webHookToken(args: Map<String, String>): String {
 fun authToken(args: Map<String, String>): String {
     val token = try {
         args
-            .filter { (k, _) -> k == "auth_token"}
+            .filter { (k, _) -> k == "auth_token" }
             .map { (_, v) -> v }
             .first()
     } catch (e: NoSuchElementException) {
@@ -68,6 +73,7 @@ fun authToken(args: Map<String, String>): String {
     return if (token.isNotBlank()) {
         token
     } else {
+        logger.warn { "auth token does not set" }
         "none"
     }
 }

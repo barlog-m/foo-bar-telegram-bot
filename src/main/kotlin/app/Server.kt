@@ -5,10 +5,6 @@ import reactor.ipc.netty.http.server.HttpServer
 import reactor.ipc.netty.tcp.BlockingNettyContext
 
 object Server : KLogging() {
-    init {
-        System.setProperty("io.netty.noUnsafe", true.toString())
-    }
-
     private lateinit var context: BlockingNettyContext
     private var started = false
 

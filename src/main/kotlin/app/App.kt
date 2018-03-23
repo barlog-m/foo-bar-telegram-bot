@@ -5,6 +5,8 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
+    appArgs = args.toList()
+
     val mainThread = Thread.currentThread()
 
     config()
@@ -14,11 +16,11 @@ fun main(vararg args: String) {
     }, "shutdown-hook"))
 
     try {
-        Server.start(port(parse(*args)))
+        Server.start(settings.port)
     } catch (ex: RuntimeException) {
         logger.error("server start error", ex)
         System.exit(-1)
     }
 
-    while(!mainThread.isInterrupted) {Thread.sleep(100)}
+    mainThread.join()
 }
