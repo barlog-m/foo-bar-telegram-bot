@@ -14,7 +14,7 @@ fun main(vararg args: String) {
     }, "shutdown-hook"))
 
     try {
-        Server.start(port(*args))
+        Server.start(port(parse(*args)))
     } catch (ex: RuntimeException) {
         logger.error("server start error", ex)
         System.exit(-1)
