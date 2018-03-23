@@ -7,8 +7,6 @@ private val logger = KotlinLogging.logger {}
 fun main(vararg args: String) {
     appArgs = args.toList()
 
-    val mainThread = Thread.currentThread()
-
     config()
 
     Runtime.getRuntime().addShutdownHook(Thread({
@@ -22,5 +20,5 @@ fun main(vararg args: String) {
         System.exit(-1)
     }
 
-    mainThread.join()
+    Thread.currentThread().join()
 }
