@@ -1,5 +1,6 @@
 package app
 
+import app.service.registerWebHook
 import mu.KLogging
 import reactor.ipc.netty.http.server.HttpServer
 import reactor.ipc.netty.tcp.BlockingNettyContext
@@ -21,6 +22,7 @@ object Server : KLogging() {
         context = server.startRouter(router())
         started = true
         logger.info { "server started $bindAddress:$port" }
+        registerWebHook()
     }
 
     fun stop() {
