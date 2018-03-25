@@ -5,5 +5,5 @@ data class Document(
     val thumb: PhotoSize?,
     val file_name: String?,
     val mime_type: String?,
-    val file_size: Integer?
+    val file_size: Int?
 )

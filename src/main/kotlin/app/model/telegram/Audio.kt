@@ -6,5 +6,5 @@ data class Audio(
     val performer: String?,
     val title: String?,
     val mime_type: String?,
-    val file_size: Integer?
+    val file_size: Int?
 )
