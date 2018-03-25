@@ -7,7 +7,7 @@ class ServerTest {
     @Test
     fun start() {
         appArgs = listOf()
-        Server.start("localhost", 8889)
+        Server.start("localhost")
         assertTrue(Server.isStarted())
         Server.stop()
     }

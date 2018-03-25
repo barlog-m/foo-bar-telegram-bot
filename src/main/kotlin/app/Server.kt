@@ -13,6 +13,8 @@ object Server : KLogging() {
 
     fun start(port: Int) = start("0.0.0.0", port)
 
+    fun start(bindAddress: String) = start(bindAddress, 0)
+
     fun start(bindAddress: String, port: Int) {
         val server = HttpServer.builder()
             .bindAddress(bindAddress)

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtensionContext
 class ServerExtension : BeforeAllCallback, AfterAllCallback {
     override fun beforeAll(context: ExtensionContext) {
         appArgs = listOf()
-        Server.start("localhost", 8889)
+        Server.start("localhost")
     }
 
     override fun afterAll(context: ExtensionContext) {
