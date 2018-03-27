@@ -40,7 +40,7 @@ fun registerWebHook(): Mono<Void> =
         .filter { it.ok }
         .map { it.result }
         .filter { it.url.isNotEmpty() }
-        .then(
+        .flatMap {
             HttpClient
                 .create()
                 .post("${settings.url}/setWebhook", {
@@ -56,4 +56,4 @@ fun registerWebHook(): Mono<Void> =
                     logger.info { "setWebhook" }
                 }
                 .then()
-        )
+        }
