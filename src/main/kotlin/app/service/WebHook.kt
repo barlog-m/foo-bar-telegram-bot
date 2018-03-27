@@ -28,16 +28,21 @@ fun getWebhookInfo(): Mono<WebhookInfo> =
 
 fun registerWebHook(): Mono<Void> =
     getWebhookInfo()
-        .thenEmpty {
-            HttpClient
-                .create()
-                .post("${settings.url}/setWebhook", {
-                    it.addHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .sendString(Mono.fromCallable({
-                            objectMapper.writeValueAsString(
-                                WebHook(url = settings.webHookUrl)
-                            )
-                        }))
-                })
-                .log()
+        .flatMap { info ->
+            if (info.url.isEmpty()) {
+                HttpClient
+                    .create()
+                    .post("${settings.url}/setWebhook", {
+                        it.addHeader(CONTENT_TYPE, APPLICATION_JSON)
+                            .sendString(Mono.fromCallable({
+                                objectMapper.writeValueAsString(
+                                    WebHook(url = settings.webHookUrl)
+                                )
+                            }))
+                    })
+                    .log()
+            } else {
+                Mono.empty()
+            }
         }
+        .then()
