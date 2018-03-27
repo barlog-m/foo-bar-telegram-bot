@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono
 
 fun getWebhookInfo(): Mono<WebhookInfo> =
     HttpClient
-        .create(settings.url)
-        .get("/getWebhookInfo", {
+        .create()
+        .get("${settings.url}/getWebhookInfo", {
             it.addHeader(ACCEPT, APPLICATION_JSON)
         })
         .log()
@@ -30,8 +30,8 @@ fun registerWebHook(): Mono<Void> =
     getWebhookInfo()
         .thenEmpty {
             HttpClient
-                .create(settings.url)
-                .post("/setWebhook", {
+                .create()
+                .post("${settings.url}/setWebhook", {
                     it.addHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .sendString(Mono.fromCallable({
                             objectMapper.writeValueAsString(
