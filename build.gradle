@@ -46,7 +46,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVer"
-    //compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVer"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVer"
 
     compile "io.github.microutils:kotlin-logging:$kotlinLoggingVer"
     runtime "org.slf4j:slf4j-api:$slf4jVer"
