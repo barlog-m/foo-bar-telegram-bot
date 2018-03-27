@@ -14,13 +14,12 @@ val updatePost = Handler { req, resp ->
         .receive()
         .aggregate()
         .asByteArray()
-        .map {
-            objectMapper.readValue(it, Update::class.java)
+        .flatMap {
+            Mono.fromCallable { objectMapper.readValue(it, Update::class.java) }
         }
         .flatMap {
-            logger.debug { "POST $it" }
+            logger.info { "update $it" }
             onUpdate(it)
-            Mono.empty<Void>()
         }
         .onErrorResume {
             resp.status(HttpResponseStatus.BAD_REQUEST).send()
