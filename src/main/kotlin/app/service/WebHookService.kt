@@ -39,7 +39,7 @@ fun registerWebHook(): Mono<Void> =
     getWebhookInfo()
         .filter { it.ok }
         .map { it.result }
-        .filter { it.url.isNotEmpty() }
+        .filter { it.url.isEmpty() }
         .flatMap {
             HttpClient
                 .create()
