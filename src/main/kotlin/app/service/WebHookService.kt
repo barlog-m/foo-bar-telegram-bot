@@ -41,7 +41,6 @@ fun registerWebHook(): Mono<WebhookInfo> =
         .map { it.result }
         .filter { it.url.isNotEmpty() }
         .doOnSuccess {
-            logger.info { "setWebhook" }
             HttpClient
                 .create()
                 .post("${settings.url}/setWebhook", {
@@ -53,4 +52,7 @@ fun registerWebHook(): Mono<WebhookInfo> =
                         }))
                 })
                 .log()
+                .doOnNext {
+                    logger.info { "setWebhook" }
+                }.subscribe()
         }
