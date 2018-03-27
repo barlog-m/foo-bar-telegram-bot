@@ -27,7 +27,7 @@ object Server : KLogging() {
         context = server.startRouter(router())
         started = true
         logger.info { "server started $bindAddress:$port" }
-        postStartHook.block()
+        postStartHook.subscribe()
     }
 
     fun stop() {
