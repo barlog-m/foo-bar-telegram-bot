@@ -11,6 +11,7 @@ import app.settings
 import reactor.core.publisher.Mono
 import reactor.ipc.netty.http.client.HttpClient
 import io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE
+import io.netty.handler.codec.http.HttpHeaderNames.ACCEPT
 import io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON
 import mu.KotlinLogging
 
@@ -50,11 +51,25 @@ fun sendMessage(sendMessage: SendMessage): Mono<Void> =
         .create()
         .post("${settings.url}/sendMessage", {
             it.addHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .addHeader(ACCEPT, APPLICATION_JSON)
                 .sendString(Mono.fromCallable({
                     objectMapper.writeValueAsString(sendMessage)
                 }))
         })
         .log()
+        .flatMap {
+            it.receive()
+                .aggregate()
+                .asByteArray()
+                .flatMap {
+                    Mono.fromCallable {
+                        objectMapper.readValue(it, Message::class.java)
+                    }
+                }
+                .doOnNext {
+                    logger.info { "message send: $it" }
+                }
+        }
         .then()
 
 fun onUpdate(update: Update): Mono<Void> {
