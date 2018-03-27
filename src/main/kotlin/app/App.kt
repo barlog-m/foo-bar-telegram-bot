@@ -9,6 +9,8 @@ fun main(vararg args: String) {
 
     config()
 
+    logger.info { "$settings" }
+
     Runtime.getRuntime().addShutdownHook(Thread({
         Server.stop()
     }, "shutdown-hook"))
