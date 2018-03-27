@@ -26,10 +26,10 @@ fun getWebhookInfo(): Mono<WebhookInfo> =
                 }
         }
 
-fun registerWebHook(): Mono<Void> =
+fun registerWebHook(): Mono<WebhookInfo> =
     getWebhookInfo()
         .filter { it.url.isEmpty() }
-        .flatMap {
+        .doOnSuccess {
             HttpClient
                 .create()
                 .post("${settings.url}/setWebhook", {
@@ -42,4 +42,3 @@ fun registerWebHook(): Mono<Void> =
                 })
                 .log()
         }
-        .then()
