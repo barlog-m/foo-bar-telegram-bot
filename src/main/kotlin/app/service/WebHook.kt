@@ -1,16 +1,18 @@
 package app.service
 
+import app.model.telegram.Result
 import app.model.telegram.WebHook
 import app.model.telegram.WebhookInfo
 import app.objectMapper
 import app.settings
+import com.fasterxml.jackson.core.type.TypeReference
 import reactor.ipc.netty.http.client.HttpClient
 import io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE
 import io.netty.handler.codec.http.HttpHeaderNames.ACCEPT
 import io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON
 import reactor.core.publisher.Mono
 
-fun getWebhookInfo(): Mono<WebhookInfo> =
+fun getWebhookInfo(): Mono<Result<WebhookInfo>> =
     HttpClient
         .create()
         .get("${settings.url}/getWebhookInfo", {
@@ -22,13 +24,16 @@ fun getWebhookInfo(): Mono<WebhookInfo> =
                 .aggregate()
                 .asByteArray()
                 .map {
-                    objectMapper.readValue(it, WebhookInfo::class.java)
+                    objectMapper.readValue<Result<WebhookInfo>>(it,
+                        object: TypeReference<Result<WebhookInfo>>() {} )
                 }
         }
 
 fun registerWebHook(): Mono<WebhookInfo> =
     getWebhookInfo()
-        .filter { it.url.isEmpty() }
+        .filter { it.ok }
+        .map { it.result }
+        .filter { it.url.isNotEmpty() }
         .doOnSuccess {
             HttpClient
                 .create()
