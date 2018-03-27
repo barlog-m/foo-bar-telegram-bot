@@ -13,6 +13,7 @@ fun getWebhookInfo(): Mono<WebhookInfo> =
     HttpClient
         .create(settings.url)
         .get("/getWebhookInfo")
+        .log()
         .flatMap {
             it.receive()
                 .aggregate()
@@ -35,4 +36,5 @@ fun registerWebHook(): Mono<Void> =
                             )
                         }))
                 })
+                .log()
         }
