@@ -22,7 +22,7 @@ fun getWebhookInfo(): Mono<WebhookInfo> =
                 }
         }
 
-fun registerWebHook() {
+fun registerWebHook(): Mono<Void> =
     getWebhookInfo()
         .thenEmpty {
             HttpClient
@@ -36,5 +36,3 @@ fun registerWebHook() {
                         }))
                 })
         }
-
-}

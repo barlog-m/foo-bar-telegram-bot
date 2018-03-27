@@ -13,12 +13,12 @@ object Server : KLogging() {
 
     fun start(port: Int) = start("0.0.0.0", port, Mono.empty())
 
-    fun start(port: Int, postStartHook: Mono<Unit>) =
+    fun start(port: Int, postStartHook: Mono<Void>) =
         start("0.0.0.0", port, postStartHook)
 
     fun start(bindAddress: String) = start(bindAddress, 0, Mono.empty())
 
-    fun start(bindAddress: String, port: Int, postStartHook: Mono<Unit>) {
+    fun start(bindAddress: String, port: Int, postStartHook: Mono<Void>) {
         val server = HttpServer.builder()
             .bindAddress(bindAddress)
             .port(port)
