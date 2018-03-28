@@ -1,9 +1,11 @@
 package app.model.telegram
 
+import java.time.LocalDateTime
+
 data class Message(
     val message_id: Int,
     val from: User?,
-    val date: Int?,
+    val date: LocalDateTime?,
     val chat: Chat?,
     val forward_from: User?,
     val forward_from_chat: Chat?,
