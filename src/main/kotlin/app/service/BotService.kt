@@ -15,6 +15,7 @@ import io.netty.handler.codec.http.HttpHeaderNames.ACCEPT
 import io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON
 import mu.KotlinLogging
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
 private val logger = KotlinLogging.logger("BotService")
@@ -77,7 +78,7 @@ fun sendMessage(sendMessage: SendMessage): Mono<Void> =
 fun onUpdate(update: Update): Mono<Void> {
     if (update.message != null) {
         val message: Message = update.message
-        if (ChronoUnit.MINUTES.between(message.date, LocalDateTime.now()) < 1) {
+        if (message.date != null && message.date - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) < 60) {
             if (message.from != null) {
                 val user: User = message.from
                 if (!user.is_bot && message.text != null && message.text.isNotBlank()) {
